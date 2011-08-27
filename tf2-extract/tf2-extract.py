@@ -12,7 +12,7 @@ from collections import defaultdict
 import testpyconfig as wconfig
 
 
-def __u__(s):
+def u(s):
     if type(s) is type(u''):
         return s
     if type(s) is type(''):
@@ -30,7 +30,7 @@ def __u__(s):
         return unicode(s)
     except:
         try:
-            return __u__(str(s))
+            return u(str(s))
         except:
             return s
 
@@ -103,7 +103,7 @@ class diff:
 
     def __init__(self, difffile, patch, files):
         self.difffile = difffile
-        self.patch = __u__(patch)
+        self.patch = u(patch)
         self.files = files
 
         self.template = u'''<!-- This page is updated by a bot. Changes made to it will likely be lost. -->
@@ -131,13 +131,13 @@ class diff:
         print 'Parsing %s and formatting...' % self.difffile
         for line in f.readlines():
             if gre.match(r_add, line):
-                output.append(u'{{tf diff|+|2=%s}}' % __u__(gre.match(r_add, line).groups(0)[0]))
+                output.append(u'{{tf diff|+|2=%s}}' % u(gre.match(r_add, line).groups(0)[0]))
             elif gre.match(r_rem, line):
-                output.append(u'{{tf diff|-|2=%s}}' % __u__(gre.match(r_rem, line).groups(0)[0]))
+                output.append(u'{{tf diff|-|2=%s}}' % u(gre.match(r_rem, line).groups(0)[0]))
             elif gre.match(r_head, line):
-                output.append(u'{{tf diff|@|2=@@%s}}' % __u__(gre.match(r_head, line).groups(0)[0]))
+                output.append(u'{{tf diff|@|2=@@%s}}' % u(gre.match(r_head, line).groups(0)[0]))
             elif gre.match(r_con, line):
-                output.append(u'{{tf diff|c|2=%s}}' % __u__(gre.match(r_con, line).groups(0)[0]))
+                output.append(u'{{tf diff|c|2=%s}}' % u(gre.match(r_con, line).groups(0)[0]))
             elif gre.match(r_diff, line):
                 p = gre.match(r_diff, line).groups(1)[0]
                 output.append('#' + os.path.split(p)[-1])
