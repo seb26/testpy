@@ -6,18 +6,18 @@ import sys
 import wikiUpload
 import subprocess
 import hashlib
-import testpyconfig as config
+import wconfig
 
 paint = {
     'all': [
-        '3B1F23',
-        '256D8D',
-        '839FA3',
-        '18233D',
-        '28394D',
-        '384248',
-        '483838',
-        '654740',
+        # '3B1F23',
+        # '256D8D',
+        # '839FA3',
+        # '18233D',
+        # '28394D',
+        # '384248',
+        # '483838',
+        # '654740',
         '803020',
         'A89A8C',
         'B88035',
@@ -61,19 +61,22 @@ paint = {
         ]
     }
 
-uploader = wikiUpload.wikiUploader(config.username, config.password, config.url)
+config = wconfig.config['tfwiki']
+
+uploader = wikiUpload.wikiUploader(config['usr'], config['pwd'], config['url'])
 
 summary_new = u"""
 == Specifications ==
-  rot: (25.276474 -38.199379 -18.572231)
-  lightrot: (64.244095 -179.224884 -16.692621)
-  trans: (30.559074 0.000000 2.061374)
-  fov: 48
-  phongboost: .25
+  model: team fortress 2 materials.gcf/root/tf/models/player/items/all_class/pcg_hat_scout.mdl
+  vmt: team fortress 2 materials.gcf/root/tf/materials/models/player/items/all_class/pcg_hat.vmt
+  rot: (34.940689 -33.629410 -20.854008)
+  lightrot: (45.748055 -126.509415 37.351128)
+  trans: (21.625782 0.000000 3.755262)
+  fov: 64
 {{subst:pid}}
   """
 
-summary_ovr = u'Retaken. rot:(25.276474 -38.199379 -18.572231)|lightrot:(64.244095 -179.224884 -16.692621)|trans:(30.559074 0.000000 2.061374)|fov:48|phongboost:.25'
+summary_ovr = u'Retaken. rot:(9.849896 -45.864132 -9.998786)|lightrot:(19.349508 -155.406479 175.901001)|trans:(49.091202 1.000000 79.216026)|fov:64'
 
 log = open('uploadpaint.log', 'a')
 
@@ -98,14 +101,18 @@ def run(hat, fprefix, wdir, **kwargs):
         fpath = os.path.join(wdir, fname)
 
         if os.path.exists(fpath):
+            """
             if color in paint['new']:
                 print color, wname, fpath
                 upload(fpath, wname, overwrite=False, summary=summary_new)
             else:
                 print color, wname, fpath
                 upload(fpath, wname, overwrite=True, reupload=True, summary=summary_ovr)
+            """
+            print color, wname, fpath
+            upload(fpath, wname, overwrite=False, summary=summary_new)
         else:
             log.write('error:run()[noexist] %s | %s\n' % (fpath))
 
 
-print run("Vintage Tyrolean", 'tyrolean_', r'X:\Sebi\Desktop\PAINT_newp3\medic\tyrolean')
+print run("Killer Exclusive", 'killerexclusive_', r'X:\Sebi\Desktop\PAINT_newp3\allclass\killerexclusive\crush')

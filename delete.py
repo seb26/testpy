@@ -8,7 +8,7 @@ import wconfig
 f = open('delete.txt', 'rb')
 
 # Setup wiki
-config = wconfig.config['pwiki']
+config = wconfig.config['tfwiki']
 print 'Logging in.'
 wiki = wikitools.Wiki(config['url-api'])
 wiki.login(config['usr'], config['pwd'])
@@ -23,7 +23,7 @@ stats = { 'deleted': [], 'failed': [] }
 
 for page in pageobjs:
     if page.exists:
-        delete = page.delete(reason='auto: deprecated category')
+        delete = page.delete(reason='auto: unused file, replaced by file at proper name (see [[Comics/ru]])')
         print page.title, '> deleted.'
         stats['deleted'].append(page)
     else:
