@@ -9,7 +9,7 @@ __module_version__ = '0.1'
     hl_regex.py
 
     Python script for X-Chat Python plugin to notify the user when
-    incoming chat matches a particular regular expression.
+    incoming chat matches any defined regular expression.
 
     The script then logs each highlight in the server tab so that
     the user can view previous highlights with ease. Most useful
@@ -34,18 +34,27 @@ __module_version__ = '0.1'
 """
 
 # CONFIG
-# Nicknames never to scan messages from
-bad_nick = ['Spacenet', 'Spacenet_']
 
-# The regex to search for
-regex = r'\b_?s+(?:cab+|e+b+)i?\d*(?:ington|ers*|ito|ville|poot(?:is|er)?|ton|BOT|abstract|demoman|berg|asti[ae]n)*'
+# Regular expressions, in list form
+# Script will test all of them and highlight on the first one that matches
+# After a match, it'll stop searching and just highlight
+regexps = [
+    r'\b_?s+(?:cab+|e+b+)i?\d*(?:ington|ers*|ito|ville|poot(?:is|er)?|ton|BOT|abstract|demoman|berg|asti[ae]n)*',
+    r'\~(?:staff|tf2(?:update|blogupdate|patch|schema))'
+]
+
 # Matched when scanning already highlighted messages (i.e. X-Chat highlights nickname by default)
 # This should be set to your nickname with the word boundary marker
-regex_alt = r'_seb\b'
+regexp_already_hl = r'_seb\b'
 
 # The tab to send logged highlights to
 server_name = 'freenode'
 
+# Nicknames never to scan messages from
+bad_nick = [
+    'Spacenet',
+    'Spacenet_'
+]
 
 # Le script
 
@@ -58,22 +67,29 @@ xchat.prnt('hl_regex.py loaded!')
 
 def check_msg(word, word_eol, userdata):
     server_tab = xchat.find_context(channel=server_name)
-    if word[0] not in bad_nick:
-        r = re.compile(regex, re.IGNORECASE)
-        if r.search(word_eol[1]):
-            xchat.command('gui color 3')
-            xchat.emit_print( 'Channel Msg Hilight', word[0], word[1])
-            server_tab.prnt('02[%s02] 05<%s> %s' % (xchat.get_info('channel'), word[0], word_eol[1]))
-            return xchat.EAT_ALL
+
+    if word[0] in bad_nick:
+        return xchat.EAT_NONE
+    if len(word_eol) > 1:
+        for reg in regexps:
+            r = re.compile(reg, re.IGNORECASE)
+            if r.search(word_eol[1]):
+                xchat.command('gui color 3')
+                xchat.emit_print( 'Channel Msg Hilight', word[0], word[1])
+                server_tab.prnt('02[%s02] 05<%s> %s' % (xchat.get_info('channel'), word[0], word_eol[1]))
+                return xchat.EAT_ALL
+            else:
+                continue
     return xchat.EAT_NONE
 
 def check_hl(word, word_eol, userdata):
     server_tab = xchat.find_context(channel=server_name)
-    r2 = re.compile(regex_alt, re.IGNORECASE)
-    if r2.search(word_eol[1]):
-        server_tab.prnt('02[%s02] 05<%s> %s' % (xchat.get_info('channel'), word[0], word_eol[1]))
-    else:
-        return xchat.EAT_NONE
+    r2 = re.compile(regexp_already_hl, re.IGNORECASE)
+    if len(word_eol) > 1:
+        if r2.search(word_eol[1]):
+            server_tab.prnt('02[%s02] 05<%s> %s' % (xchat.get_info('channel'), word[0], word_eol[1]))
+        else:
+            return xchat.EAT_NONE
 
 xchat.hook_print('Channel Msg Hilight', check_hl)
 xchat.hook_print('Channel Action Hilight', check_hl)
